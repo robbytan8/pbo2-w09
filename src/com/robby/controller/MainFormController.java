@@ -1,14 +1,26 @@
 package com.robby.controller;
 
-import com.robby.ws.ExampleWs;
-import com.robby.ws.ExampleWs_Service;
+import com.robby.MainApp;
+import com.robby.utility.ViewUtil;
+import com.robby.ws.Department;
+import com.robby.ws.DepartmentWs;
+import com.robby.ws.DepartmentWs_Service;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -18,32 +30,24 @@ import javafx.scene.control.TextField;
 public class MainFormController implements Initializable {
 
     @FXML
-    private TextField txtName;
-    @FXML
-    private TextField txtValue1;
-    @FXML
-    private TextField txtValue2;
-    private ExampleWs_Service service;
-    private ExampleWs ws;
+    private BorderPane borderPane;
+    private DepartmentWs departmentWs;
+    private ObservableList<Department> departments;
+    private Stage departmentStage;
+    private DepartmentWs_Service departmentService;
 
-    @FXML
-    private void btnSubmitAction(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information");
-        alert.setContentText(ws.hello(txtName.getText()));
-        alert.showAndWait();
-        txtName.clear();
+    public DepartmentWs getDepartmentWs() {
+        if (departmentWs == null) {
+            departmentWs = getDepartmentService().getDepartmentWsPort();
+        }
+        return departmentWs;
     }
 
-    @FXML
-    private void btnSumAction(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information");
-        alert.setContentText(ws.add(Integer.parseInt(txtValue1.getText()),
-                Integer.parseInt(txtValue2.getText())).toString());
-        alert.showAndWait();
-        txtValue1.clear();
-        txtValue2.clear();
+    public DepartmentWs_Service getDepartmentService() {
+        if (departmentService == null) {
+            departmentService = new DepartmentWs_Service();
+        }
+        return departmentService;
     }
 
     /**
@@ -54,8 +58,69 @@ public class MainFormController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        service = new ExampleWs_Service();
-        ws = service.getExampleWsPort();
+        // TODO
+    }
+
+    public ObservableList<Department> getDepartments() {
+        try {
+            if (departments == null) {
+                departments = FXCollections.observableArrayList();
+                departments.addAll(getDepartmentWs().getAllDepartment());
+            }
+            return departments;
+        } catch (Exception e) {
+            ViewUtil.showAlert(Alert.AlertType.ERROR, "Error", e.getMessage());
+            Platform.exit();
+        }
+        return null;
+    }
+
+    @FXML
+    private void mnAboutAction(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setContentText("Created by Robby");
+        alert.setTitle("Developer Info");
+        alert.showAndWait();
+    }
+
+    @FXML
+    private void mnCloseAction(ActionEvent event) {
+        Platform.exit();
+    }
+
+    @FXML
+    private void mnReportAllStudentAction(ActionEvent event) {
+        //  TODO print report
+    }
+
+    @FXML
+    private void toolDepAction(ActionEvent event) {
+        if (departmentStage == null) {
+            try {
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(MainApp.class.getResource("view/DepartmentForm.fxml"));
+                AnchorPane root = loader.load();
+                DepartmentFormController controller = loader.getController();
+                controller.setMainController(this);
+                Scene scene = new Scene(root);
+                departmentStage = new Stage();
+                departmentStage.setScene(scene);
+                departmentStage.setTitle("Department Management");
+                departmentStage.initOwner(borderPane.getScene().getWindow());
+                departmentStage.initModality(Modality.NONE);
+            } catch (IOException ex) {
+                ViewUtil.showAlert(Alert.AlertType.ERROR, "Error", ex.getMessage());
+            }
+        }
+        if (departmentStage.isShowing() && !departmentStage.isFocused()) {
+            departmentStage.toFront();
+        } else {
+            departmentStage.show();
+        }
+    }
+
+    @FXML
+    private void toolStudentAction(ActionEvent event) {
     }
 
 }

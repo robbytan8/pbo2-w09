@@ -33,5 +33,39 @@
         <delete dir="${build.generated.dir}/jax-wsCache/ExampleWs"/>
         <delete dir="${build.generated.sources.dir}/jax-ws/com/robby/ws"/>
     </target>
-    <target name="wsimport-client-generate" depends="wsimport-client-ExampleWs"/>
+    <target name="wsimport-client-DepartmentWs" depends="wsimport-init">
+        <mkdir dir="${build.generated.dir}/jax-wsCache/DepartmentWs"/>
+        <property name="wsdl-DepartmentWs" location="xml-resources/web-service-references/DepartmentWs/wsdl/localhost_8080/PBO2-web-W09/DepartmentWs.wsdl"/>
+        <wsimport sourcedestdir="${build.generated.dir}/jax-wsCache/DepartmentWs" destdir="${build.generated.dir}/jax-wsCache/DepartmentWs" wsdl="${wsdl-DepartmentWs}" catalog="catalog.xml" encoding="${source.encoding}" extension="true" verbose="true" fork="false" wsdlLocation="http://localhost:8080/PBO2-web-W09/DepartmentWs?wsdl" xnocompile="true" xendorsed="true" package="com.robby.ws">
+            <depends file="${wsdl-DepartmentWs}"/>
+            <produces dir="${build.generated.dir}/jax-wsCache/DepartmentWs"/>
+        </wsimport>
+        <copy todir="${build.generated.sources.dir}/jax-ws">
+            <fileset dir="${build.generated.dir}/jax-wsCache/DepartmentWs">
+                <include name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="wsimport-client-clean-DepartmentWs" depends="-init-project">
+        <delete dir="${build.generated.dir}/jax-wsCache/DepartmentWs"/>
+        <delete dir="${build.generated.sources.dir}/jax-ws/com/robby/ws/dep"/>
+    </target>
+    <target name="wsimport-client-StudentWs" depends="wsimport-init">
+        <mkdir dir="${build.generated.dir}/jax-wsCache/StudentWs"/>
+        <property name="wsdl-StudentWs" location="xml-resources/web-service-references/StudentWs/wsdl/localhost_8080/PBO2-web-W09/StudentWs.wsdl"/>
+        <wsimport sourcedestdir="${build.generated.dir}/jax-wsCache/StudentWs" destdir="${build.generated.dir}/jax-wsCache/StudentWs" wsdl="${wsdl-StudentWs}" catalog="catalog.xml" encoding="${source.encoding}" extension="true" verbose="true" fork="false" wsdlLocation="http://localhost:8080/PBO2-web-W09/StudentWs?wsdl" xnocompile="true" xendorsed="true" package="com.robby.ws">
+            <depends file="${wsdl-StudentWs}"/>
+            <produces dir="${build.generated.dir}/jax-wsCache/StudentWs"/>
+        </wsimport>
+        <copy todir="${build.generated.sources.dir}/jax-ws">
+            <fileset dir="${build.generated.dir}/jax-wsCache/StudentWs">
+                <include name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="wsimport-client-clean-StudentWs" depends="-init-project">
+        <delete dir="${build.generated.dir}/jax-wsCache/StudentWs"/>
+        <delete dir="${build.generated.sources.dir}/jax-ws/com/robby/ws/stu"/>
+    </target>
+    <target name="wsimport-client-generate" depends="wsimport-client-ExampleWs, wsimport-client-DepartmentWs, wsimport-client-StudentWs"/>
 </project>
